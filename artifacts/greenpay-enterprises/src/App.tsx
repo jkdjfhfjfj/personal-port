@@ -23,6 +23,7 @@ import {
   Inbox,
   Landmark,
   LayoutDashboard,
+  LockKeyhole,
   Mail,
   MapPin,
   Menu,
@@ -144,6 +145,26 @@ function SectionLabel({ children }: { children: ReactNode }) {
   );
 }
 
+function ServiceIcon({ name }: { name?: string }) {
+  const iconProps = { size: 18, "aria-hidden": true as const };
+
+  switch (name) {
+    case "chart":
+      return <BarChart3 {...iconProps} />;
+    case "sparkle":
+      return <Sparkles {...iconProps} />;
+    case "users":
+      return <Users {...iconProps} />;
+    case "lock":
+      return <LockKeyhole {...iconProps} />;
+    case "phone":
+      return <Phone {...iconProps} />;
+    case "code":
+    default:
+      return <Code2 {...iconProps} />;
+  }
+}
+
 function PublicNav() {
   const [open, setOpen] = useState(false);
   return (
@@ -158,7 +179,7 @@ function PublicNav() {
             What we do
           </a>
           <a href="#payments" data-testid="link-nav-payments">
-            Global payments
+            Ways to pay
           </a>
           <a href="#approach" data-testid="link-nav-approach">
             Our approach
@@ -202,7 +223,7 @@ function PublicNav() {
                 : id === "approach"
                   ? "Our approach"
                   : id === "payments"
-                    ? "Global payments"
+                    ? "Ways to pay"
                   : id === "contact"
                     ? "Contact"
                     : "What we do"}
@@ -530,7 +551,7 @@ function Home() {
                     >
                       <div className="flex items-start justify-between">
                         <span className="grid size-10 place-items-center rounded-xl bg-secondary text-primary">
-                          {item.icon || <Code2 size={18} />}
+                          <ServiceIcon name={item.icon} />
                         </span>
                         <span className="gp-mono text-[9px] text-muted-foreground">
                           0{i + 1}
@@ -559,16 +580,16 @@ function Home() {
           <div className="mx-auto max-w-7xl">
             <div className="grid gap-12 lg:grid-cols-[.78fr_1.22fr]">
               <div>
-                <SectionLabel>03 / Global delivery</SectionLabel>
+                <SectionLabel>03 / Ways to pay</SectionLabel>
                 <h2 className="gp-display max-w-md text-5xl leading-[.94] md:text-6xl">
-                  Built here.
+                  Pay your
                   <br />
-                  Ready anywhere.
+                  way.
                 </h2>
                 <p className="mt-7 max-w-sm text-sm leading-7 text-muted-foreground">
-                  We help teams launch and operate digital services across
-                  borders, currencies, and the payment habits their customers
-                  already trust.
+                  We work with clients across borders and currencies. Choose the
+                  payment method that works best for your project, deposit, or
+                  invoice.
                 </p>
                 <div className="mt-8 rounded-2xl border border-primary/15 bg-card p-5">
                   <div className="flex items-start gap-3">
@@ -576,11 +597,11 @@ function Home() {
                       <Globe2 size={18} />
                     </span>
                     <div>
-                      <p className="font-bold">Global service coverage</p>
+                      <p className="font-bold">Local and international clients</p>
                       <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                        Nairobi-based, remote-first, and ready to work with
-                        clients across East Africa, Africa, and international
-                        markets.
+                        We send verified payment instructions with each invoice
+                        or directly from GreenPay. Always confirm the details
+                        before sending funds.
                       </p>
                     </div>
                   </div>
@@ -591,26 +612,26 @@ function Home() {
                   {
                     title: "Card payments",
                     icon: CreditCard,
-                    text: "Visa, Mastercard, and other supported debit or credit cards through a PCI-compliant gateway.",
-                    note: "Hosted checkout or tokenized payments",
+                    text: "Pay a GreenPay invoice by Visa, Mastercard, or another supported card through a secure checkout link.",
+                    note: "Secure checkout link provided by GreenPay",
                   },
                   {
                     title: "Mobile money",
                     icon: Smartphone,
-                    text: "M-Pesa, Airtel Money, and country-specific wallets connected through approved regional providers.",
-                    note: "Local rails, prompts, and confirmations",
+                    text: "Pay project deposits and invoices through M-Pesa, Airtel Money, or another supported mobile wallet.",
+                    note: "Use the verified number on your invoice",
                   },
                   {
                     title: "Bank transfers",
                     icon: Landmark,
-                    text: "Local and international account-to-account payments with references, receipts, and reconciliation workflows.",
-                    note: "Built for larger invoices and retainers",
+                    text: "Settle project deposits, invoices, and retainers by local or international bank transfer.",
+                    note: "Include your invoice or project reference",
                   },
                   {
                     title: "Crypto payments",
                     icon: Bitcoin,
-                    text: "Compliant crypto and stablecoin payment flows where the customer, country, and provider support them.",
-                    note: "Clear settlement and refund rules",
+                    text: "Where agreed in advance, pay with a supported cryptocurrency or stablecoin after we confirm the network and wallet.",
+                    note: "Available by prior agreement only",
                   },
                 ].map(({ title, icon: Icon, text, note }) => (
                   <article
@@ -623,7 +644,7 @@ function Home() {
                         <Icon size={18} />
                       </span>
                       <span className="rounded-full bg-accent/60 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-primary">
-                        Integration
+                          Client payment
                       </span>
                     </div>
                     <h3 className="mt-10 text-xl font-bold">{title}</h3>
@@ -639,16 +660,16 @@ function Home() {
             </div>
             <div className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-primary px-6 py-5 text-primary-foreground">
               <p className="max-w-2xl text-sm leading-6 text-primary-foreground/70">
-                Payment rails are planned around your market, currency, risk
-                controls, and settlement needs. We never ask your customers to
-                share raw card details, wallet seed phrases, or private keys.
+                Payment details are shared on your invoice or by GreenPay
+                directly. We will never ask you to share a card PIN, CVV, wallet
+                seed phrase, or private key.
               </p>
               <a
                 href="#contact"
                 data-testid="link-payments-contact"
                 className={`${buttonBase} shrink-0 bg-accent text-primary`}
               >
-                Plan your payment flow <ArrowRight size={15} />
+                Request payment instructions <ArrowRight size={15} />
               </a>
             </div>
           </div>

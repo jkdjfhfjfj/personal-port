@@ -33,7 +33,7 @@ GreenPay is a global digital technology partner website with a public services p
 
 - The frontend is a static Vite build and the API is a separate Express service.
 - Production hosting should route `/api/*` to the API service and all other paths to the frontend SPA.
-- Payment method content is informational until a provider integration and server-side payment lifecycle are implemented.
+- Payment method content explains how clients can pay GreenPay; verified payment details should be shared per invoice or payment request rather than hardcoded in the public site.
 - Current content uses seeded in-memory API data; it is not durable storage.
 
 ## Product
@@ -41,7 +41,7 @@ GreenPay is a global digital technology partner website with a public services p
 - Public portfolio and services site for global clients
 - Service enquiry submission and owner pipeline
 - Owner editing for services, projects, founders, testimonials, FAQs, and company details
-- Payment rail guidance for cards, mobile money, bank transfers, and compliant crypto flows
+- Client payment guidance for cards, mobile money, bank transfers, and prior-agreement crypto payments
 
 ## User preferences
 

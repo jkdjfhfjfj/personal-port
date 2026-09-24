@@ -106,17 +106,17 @@ Run these checks after both services finish deploying:
 - Content, bookings, and messages are currently stored in API memory. A restart or redeploy resets them.
 - The owner sign-in is a client-side demo gate, not production authentication.
 - `DATABASE_URL` alone does not turn on persistence; PostgreSQL tables, migrations, and server-side storage still need to be wired in.
-- Payment method cards on the public site describe supported integration paths. They are not a live checkout until a payment provider, webhooks, signature verification, refunds, reconciliation, and settlement rules are configured.
+- Payment method cards on the public site explain how clients can pay GreenPay. They do not publish account numbers, mobile-money numbers, card details, or crypto wallet addresses; send verified payment instructions with each invoice or payment request.
 
-## 6. Global services and payment rails
+## 6. Global services and client payment methods
 
 GreenPay can deliver remotely for clients in Kenya, East Africa, Africa, and international markets. Scope, currency, tax, data protection, settlement timing, and supported countries must be confirmed per client and payment provider.
 
-The site presents four payment rails:
+The site presents four ways for clients to pay GreenPay:
 
-- **Cards:** Visa, Mastercard, and other provider-supported debit or credit cards through a PCI-compliant gateway.
-- **Mobile money:** M-Pesa, Airtel Money, and other country-specific wallets through an approved local or regional provider.
-- **Bank transfer:** Local and international account-to-account payments with reference capture and manual or automated reconciliation.
-- **Crypto:** Only where legally supported, preferably stablecoin invoices through a compliant provider with transaction monitoring and clear refund rules.
+- **Cards:** Visa, Mastercard, and other supported cards through a secure checkout link sent by GreenPay.
+- **Mobile money:** M-Pesa, Airtel Money, and other supported wallets using the verified details provided with the invoice.
+- **Bank transfer:** Local and international transfers for deposits, invoices, and retainers. Clients should include the invoice or project reference.
+- **Crypto:** Available only by prior agreement, with GreenPay confirming the supported asset, network, and wallet before payment.
 
-Do not collect card numbers, CVVs, crypto private keys, or wallet seed phrases in this application. Use hosted checkout or provider tokenization, and keep payment secrets server-side.
+Do not publish payment account details in the frontend or ask clients for card PINs, CVVs, crypto private keys, or wallet seed phrases. Verify payment instructions before sending funds.

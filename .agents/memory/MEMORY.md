@@ -1,0 +1,1 @@
+- [Preview API behavior](preview-api.md) — seeded in-memory content keeps the imported GreenPay site runnable without database or Clerk setup.

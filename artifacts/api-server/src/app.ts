@@ -1,6 +1,8 @@
 import express, { type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
+import { existsSync } from "node:fs";
+import path from "node:path";
 import router from "./routes";
 import { logger } from "./lib/logger";
 import { CLERK_PROXY_PATH, clerkProxyMiddleware, getClerkProxyHost } from "./middlewares/clerkProxyMiddleware";
@@ -44,5 +46,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
+
+const webDistCandidates = [
+  path.resolve(process.cwd(), "../greenpay-enterprises/dist/public"),
+  path.resolve(process.cwd(), "artifacts/greenpay-enterprises/dist/public"),
+];
+const webDist =
+  webDistCandidates.find((candidate) => existsSync(candidate)) ??
+  webDistCandidates[0];
+
+// Render can run the API and the built website from one Web Service.
+// Keep API routes above the static handler so they are never swallowed by
+// the SPA fallback.
+app.use(express.static(webDist, { index: false }));
+app.get(/^(?!\/api(?:\/|$)).*/, (_req, res) => {
+  res.sendFile(path.join(webDist, "index.html"));
+});
 
 export default app;

@@ -1,122 +1,174 @@
 # GreenPay on Render
 
-This project deploys as two Render services:
+GreenPay is configured to deploy as **one Render Web Service**. The Express
+server serves both:
 
-1. **GreenPay Web** — a Render Static Site built from the React/Vite frontend.
-2. **GreenPay API** — a Render Web Service running the Express API.
+- the API under `/api/*`
+- the built React website at `/`
 
-Both services should use the same Git repository and the **repository root (`.`)** as their working directory. Do not set either service's working directory to `artifacts/greenpay-enterprises` or `artifacts/api-server`; the workspace lockfile and package catalog live at the repository root.
+This avoids creating a separate Render Static Site, avoids a frontend-to-API
+rewrite, and is the simplest setup when you are using Render's dashboard
+without shell access.
 
-## 1. Create the API Web Service
+## Easiest setup: use the Render Blueprint
 
-In Render, create a **Web Service** from the repository.
+The repository includes [`render.yaml`](./render.yaml), so you do not need to
+type the commands manually.
+
+1. Open the Render dashboard.
+2. Choose **New → Blueprint**.
+3. Connect the Git repository containing GreenPay.
+4. Select the repository root and apply the Blueprint.
+5. Render creates one service named `greenpay`.
+
+The Blueprint already sets the root directory, build command, start command,
+health check, Node version, and production environment.
+
+## Manual Web Service settings
+
+If you prefer **New → Web Service**, use these exact values:
 
 | Setting | Value |
 | --- | --- |
-| Name | `greenpay-api` |
-| Working Directory | `.` |
-| Runtime | Node |
-| Build Command | `corepack enable && pnpm install --frozen-lockfile && pnpm --filter @workspace/api-server run build` |
+| Service name | `greenpay` |
+| Root Directory | `.` |
+| Runtime | `Node` |
+| Plan | `Free` |
+| Build Command | `corepack enable && pnpm install --frozen-lockfile && PORT=4173 BASE_PATH=/ pnpm --filter @workspace/greenpay-enterprises run build && pnpm --filter @workspace/api-server run build` |
 | Start Command | `pnpm --filter @workspace/api-server run start` |
 | Health Check Path | `/api/healthz` |
+| Publish Directory | Not applicable — this is a Web Service, not a Static Site |
 | Auto-deploy | On |
 
-Render provides `PORT` automatically. Do not hardcode a port in the service settings or in application code.
+Both frontend and API builds run from the repository root because the
+workspace lockfile and pnpm catalog are stored there.
 
-### API environment variables
+Render supplies `PORT` automatically when the service starts. Do not replace
+the runtime `PORT` with a hardcoded value. The `PORT=4173` in the build
+command only gives Vite a valid port while it creates the static files.
 
-Set these in the API service's **Environment** tab:
+## Environment variables
 
-| Variable | Required now | Value |
+Set these under the Render service's **Environment** tab:
+
+| Variable | Value | Required |
 | --- | --- | --- |
-| `NODE_VERSION` | Recommended | `24` |
-| `NODE_ENV` | Recommended | `production` |
-| `LOG_LEVEL` | Optional | `info` |
-| `DATABASE_URL` | No | Leave unset until PostgreSQL persistence is implemented |
-| `SESSION_SECRET` | No | Set a long random value when server sessions are added |
-| `CLERK_SECRET_KEY` | No | Set only when Clerk server authentication is added |
-| `CLERK_PUBLISHABLE_KEY` | No | Set only when the frontend is migrated to Clerk |
+| `NODE_VERSION` | `24` | Recommended |
+| `NODE_ENV` | `production` | Recommended |
+| `BASE_PATH` | `/` | Yes |
+| `LOG_LEVEL` | `info` | Optional |
 
-Do not commit `.env` files, API keys, payment secrets, private keys, or database URLs. Use Render's environment variables and secret files for those values.
+Do not add these to the production frontend:
 
-After the API deploys, verify:
+- `API_PROXY_TARGET` — local Vite development only
+- a separate API URL — the website uses relative `/api/*` requests
+- `PORT` — Render injects it at runtime
+
+Future production variables can be added when those features are implemented:
+
+| Variable | Purpose |
+| --- | --- |
+| `DATABASE_URL` | PostgreSQL persistence |
+| `SESSION_SECRET` | Server-side session signing |
+| `CLERK_SECRET_KEY` | Server authentication |
+| `CLERK_PUBLISHABLE_KEY` | Public Clerk configuration |
+
+Never commit `.env` files, payment secrets, API keys, private keys, or database
+URLs to the repository.
+
+## How the single service works
+
+The build command creates the frontend files at:
 
 ```text
-https://<your-api-service>.onrender.com/api/healthz
+artifacts/greenpay-enterprises/dist/public
 ```
 
-The response should be:
+The Express server then serves that directory and keeps API routes ahead of
+the SPA fallback:
+
+```text
+/api/healthz
+/api/bootstrap
+/api/services
+/admin/*
+/sign-in
+/
+```
+
+No Render rewrite rules are needed. Do not create a separate Static Site for
+this configuration.
+
+## Keep the free service warm
+
+Render free Web Services can spin down after inactivity. A timer inside the
+application cannot reliably prevent this because the process is no longer
+running after it sleeps. A browser timer also only works while somebody has
+the site open.
+
+To send a request every 10 minutes without shell access, use a browser-based
+HTTP monitor such as cron-job.org:
+
+1. Create a free account at `cron-job.org`.
+2. Create a new HTTP cron job.
+3. Use this URL:
+
+   ```text
+   https://<your-greenpay-service>.onrender.com/api/healthz
+   ```
+
+4. Set the schedule to every **10 minutes**.
+5. Use `GET` and expect an HTTP `200` response.
+6. Save the job and run it once to confirm the URL works.
+
+The health endpoint returns:
 
 ```json
 {"status":"ok"}
 ```
 
-## 2. Create the frontend Static Site
+This is an external keep-alive request, not an application feature. Render can
+still apply its own limits or suspend a free service, and a sleeping service
+will still have a cold-start delay on the first request.
 
-Create a **Static Site** from the same repository.
+## First launch checks
 
-| Setting | Value |
-| --- | --- |
-| Name | `greenpay-web` |
-| Working Directory | `.` |
-| Build Command | `corepack enable && pnpm install --frozen-lockfile && pnpm --filter @workspace/greenpay-enterprises run build` |
-| Publish Directory | `artifacts/greenpay-enterprises/dist/public` |
-| Auto-deploy | On |
+After the service deploys:
 
-### Frontend environment variables
+1. Open `https://<your-greenpay-service>.onrender.com/` and confirm the site loads.
+2. Open `/api/healthz` and confirm it returns `{"status":"ok"}`.
+3. Open `/api/bootstrap` and confirm the seeded content JSON is returned.
+4. Open `/sign-in` and confirm the owner access screen loads.
+5. Open `/admin` and confirm the workspace route loads.
+6. Scroll to **Ways to pay** and confirm the client payment cards are visible.
+7. Submit a test enquiry and confirm it appears in the owner workspace.
+8. Check the Render service logs.
 
-| Variable | Value | Why |
-| --- | --- | --- |
-| `NODE_VERSION` | `24` | Keeps the Render build aligned with the workspace |
-| `BASE_PATH` | `/` | The site is served at the domain root |
+## Current production limitations
 
-`PORT` is not needed for the Static Site. `API_PROXY_TARGET` is only for local Vite development and should not be added to the production frontend.
+- Content, bookings, and messages are stored in API memory. A restart or
+  redeploy resets them.
+- Owner sign-in is currently a client-side demo gate, not production
+  authentication.
+- `DATABASE_URL` alone does not enable persistence; database tables,
+  migrations, and server-side storage still need to be implemented.
+- The public payment cards explain how clients can pay GreenPay. They do not
+  publish account numbers, mobile-money numbers, card details, or crypto
+  wallet addresses.
 
-## 3. Add the `/api/*` rewrite
+## Client payment methods
 
-The frontend uses relative requests such as `/api/bootstrap`. In the Render Static Site dashboard, add a rewrite:
+GreenPay can work with clients in Kenya, East Africa, Africa, and international
+markets. The site presents four ways for clients to pay GreenPay:
 
-| Source | Destination | Action |
-| --- | --- | --- |
-| `/api/*` | `https://<your-api-service>.onrender.com/api/*` | Rewrite |
+- **Cards:** Visa, Mastercard, and other supported cards through a secure
+  checkout link sent by GreenPay.
+- **Mobile money:** M-Pesa, Airtel Money, and other supported wallets using
+  verified details provided with the invoice.
+- **Bank transfer:** Local and international transfers for deposits, invoices,
+  and retainers. Clients should include the invoice or project reference.
+- **Crypto:** Available only by prior agreement, with GreenPay confirming the
+  supported asset, network, and wallet before payment.
 
-Replace the destination hostname with the actual API service hostname. This keeps the browser on the frontend domain and avoids adding a production API URL to the compiled frontend.
-
-Also add the SPA fallback:
-
-| Source | Destination | Action |
-| --- | --- | --- |
-| `/*` | `/index.html` | Rewrite |
-
-The API rewrite must be listed before the SPA fallback so `/api/healthz` is not served `index.html`.
-
-## 4. First launch checks
-
-Run these checks after both services finish deploying:
-
-1. Open the frontend URL and confirm the public page loads.
-2. Open `https://<frontend-service>.onrender.com/api/healthz` and confirm it returns `{"status":"ok"}`.
-3. Open `https://<frontend-service>.onrender.com/api/bootstrap` and confirm it returns the seeded content JSON.
-4. Submit a test enquiry and confirm it appears in the owner workspace.
-5. Check Render logs for both services.
-6. Add a custom domain only after the two service URLs work.
-
-## 5. Current production limitations
-
-- Content, bookings, and messages are currently stored in API memory. A restart or redeploy resets them.
-- The owner sign-in is a client-side demo gate, not production authentication.
-- `DATABASE_URL` alone does not turn on persistence; PostgreSQL tables, migrations, and server-side storage still need to be wired in.
-- Payment method cards on the public site explain how clients can pay GreenPay. They do not publish account numbers, mobile-money numbers, card details, or crypto wallet addresses; send verified payment instructions with each invoice or payment request.
-
-## 6. Global services and client payment methods
-
-GreenPay can deliver remotely for clients in Kenya, East Africa, Africa, and international markets. Scope, currency, tax, data protection, settlement timing, and supported countries must be confirmed per client and payment provider.
-
-The site presents four ways for clients to pay GreenPay:
-
-- **Cards:** Visa, Mastercard, and other supported cards through a secure checkout link sent by GreenPay.
-- **Mobile money:** M-Pesa, Airtel Money, and other supported wallets using the verified details provided with the invoice.
-- **Bank transfer:** Local and international transfers for deposits, invoices, and retainers. Clients should include the invoice or project reference.
-- **Crypto:** Available only by prior agreement, with GreenPay confirming the supported asset, network, and wallet before payment.
-
-Do not publish payment account details in the frontend or ask clients for card PINs, CVVs, crypto private keys, or wallet seed phrases. Verify payment instructions before sending funds.
+Payment details should be sent with the invoice or directly by GreenPay. Never
+publish card PINs, CVVs, crypto private keys, or wallet seed phrases.

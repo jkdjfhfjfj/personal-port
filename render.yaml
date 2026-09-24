@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: greenpay
+    runtime: node
+    plan: free
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && PORT=4173 BASE_PATH=/ pnpm --filter @workspace/greenpay-enterprises run build && pnpm --filter @workspace/api-server run build
+    startCommand: pnpm --filter @workspace/api-server run start
+    healthCheckPath: /api/healthz
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NODE_ENV
+        value: production
+      - key: BASE_PATH
+        value: /

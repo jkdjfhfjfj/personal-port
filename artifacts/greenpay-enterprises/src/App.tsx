@@ -137,9 +137,15 @@ function Brand({ inverse = false }: { inverse?: boolean }) {
   );
 }
 
-function SectionLabel({ children }: { children: ReactNode }) {
+function SectionLabel({
+  children,
+  className = "text-primary/70",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
   return (
-    <p className="gp-mono mb-4 text-[10px] font-bold text-primary/70">
+    <p className={`gp-mono mb-4 text-[10px] font-bold ${className}`}>
       {children}
     </p>
   );
@@ -676,19 +682,21 @@ function Home() {
         </section>
         <section
           id="work"
-          className="bg-secondary/50 px-5 py-24 lg:px-8 lg:py-36"
+          className="bg-primary px-5 py-24 text-primary-foreground lg:px-8 lg:py-36"
         >
           <div className="mx-auto max-w-7xl">
             <div className="flex flex-wrap items-end justify-between gap-6">
               <div>
-                <SectionLabel>04 / Selected work</SectionLabel>
+                <SectionLabel className="text-accent">
+                  04 / Selected work
+                </SectionLabel>
                 <h2 className="gp-display text-5xl leading-none md:text-6xl">
                   Built for real
                   <br />
                   Kenyan momentum.
                 </h2>
               </div>
-              <p className="max-w-xs text-sm leading-6 text-muted-foreground">
+              <p className="max-w-xs text-sm leading-6 text-primary-foreground/70">
                 A few projects where clear thinking met committed teams.
               </p>
             </div>
@@ -703,7 +711,13 @@ function Home() {
                     <div
                       className="relative min-h-[270px] overflow-hidden p-8"
                       style={{
-                        background: project.accent || "hsl(164 39% 14%)",
+                        background:
+                          {
+                            lime: "linear-gradient(135deg, hsl(154 42% 23%), hsl(164 39% 14%))",
+                            navy: "linear-gradient(135deg, hsl(213 43% 27%), hsl(164 39% 14%))",
+                            peach: "linear-gradient(135deg, hsl(20 66% 47%), hsl(4 55% 32%))",
+                            blue: "linear-gradient(135deg, hsl(195 60% 34%), hsl(213 43% 27%))",
+                          }[project.accent || ""] || "hsl(164 39% 14%)",
                       }}
                     >
                       <div className="absolute -right-12 -top-12 size-56 rounded-full border border-white/20" />
@@ -717,7 +731,7 @@ function Home() {
                         {project.title}
                       </p>
                     </div>
-                    <div className="flex flex-col justify-between p-8 lg:p-12">
+                    <div className="flex flex-col justify-between bg-card p-8 text-card-foreground lg:p-12">
                       <div>
                         <span className="gp-mono text-[10px] text-muted-foreground">
                           The brief
@@ -840,7 +854,9 @@ function Home() {
         {founders.length > 0 && (
           <section className="px-5 py-24 lg:px-8">
             <div className="mx-auto max-w-7xl">
-              <SectionLabel>07 / The people</SectionLabel>
+              <SectionLabel className="text-primary/60">
+                07 / The people
+              </SectionLabel>
               <div className="grid gap-10 lg:grid-cols-[.8fr_1.2fr]">
                 <div>
                   <h2 className="gp-display text-5xl leading-none">
@@ -856,14 +872,19 @@ function Home() {
                       className="rounded-2xl border border-border bg-card p-6"
                       data-testid={`card-founder-${founder.id}`}
                     >
-                      <span
-                        className="grid size-16 place-items-center rounded-2xl text-lg font-bold"
-                        style={{
-                          background: founder.color || "hsl(42 83% 63%)",
-                        }}
+                      <div
+                        className="relative grid size-24 place-items-center overflow-hidden rounded-[1.75rem] bg-primary text-accent shadow-lg"
+                        data-testid={`mark-founder-${founder.id}`}
                       >
-                        {founder.initials}
-                      </span>
+                        <span className="absolute -right-5 -top-5 size-16 rounded-full border border-accent/35" />
+                        <span className="absolute -bottom-8 -left-5 size-20 rounded-full border border-accent/20" />
+                        <span className="relative grid size-14 place-items-center rounded-full border border-accent/60 text-xl font-bold tracking-tight">
+                          {founder.initials}
+                        </span>
+                        <span className="absolute bottom-2 right-3 gp-mono text-[7px] text-accent/70">
+                          GP / {String(founder.id).padStart(2, "0")}
+                        </span>
+                      </div>
                       <h3 className="mt-6 text-lg font-bold">{founder.name}</h3>
                       <p className="text-xs font-semibold text-muted-foreground">
                         {founder.role}

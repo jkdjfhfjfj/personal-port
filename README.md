@@ -1,6 +1,6 @@
 # GreenPay site
 
-Deployment instructions for Render are in [`RENDER.md`](./RENDER.md). The short local hosting notes are in [`HOSTING.md`](./HOSTING.md).
+Deployment instructions for the one-service Render setup are in [`RENDER.md`](./RENDER.md). The repository also includes [`render.yaml`](./render.yaml), so the service can be created from Render's Blueprint flow without shell access. The short local hosting notes are in [`HOSTING.md`](./HOSTING.md).
 
 ## Run locally outside Replit
 

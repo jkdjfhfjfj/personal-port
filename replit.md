@@ -33,6 +33,7 @@ GreenPay is a global digital technology partner website with a public services p
 
 - The frontend is a static Vite build and the API is a separate Express service.
 - Production hosting should route `/api/*` to the API service and all other paths to the frontend SPA.
+- Render production uses one Express Web Service that serves both the built frontend and `/api/*`; local Replit development keeps the frontend and API workflows separate.
 - Payment method content explains how clients can pay GreenPay; verified payment details should be shared per invoice or payment request rather than hardcoded in the public site.
 - Current content uses seeded in-memory API data; it is not durable storage.
 

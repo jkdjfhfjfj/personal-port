@@ -1,22 +1,21 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: GreenPay Enterprises public content and owner workspace API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
+  - name: public
+  - name: admin
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +23,682 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /bootstrap:
+    get:
+      operationId: getPublicBootstrap
+      tags: [public]
+      summary: Load published website content
+      responses:
+        "200":
+          description: Published content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicBootstrap"
+  /services:
+    get:
+      operationId: listServices
+      tags: [public, admin]
+      summary: List services
+      responses:
+        "200":
+          description: Services
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Service"
+    post:
+      operationId: createService
+      tags: [admin]
+      summary: Create a service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceInput"
+      responses:
+        "201":
+          description: Created service
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+  /services/{id}:
+    patch:
+      operationId: updateService
+      tags: [admin]
+      summary: Update a service
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceUpdate"
+      responses:
+        "200":
+          description: Updated service
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+    delete:
+      operationId: deleteService
+      tags: [admin]
+      summary: Delete a service
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "204":
+          description: Deleted
+  /projects:
+    get:
+      operationId: listProjects
+      tags: [public, admin]
+      summary: List portfolio projects
+      responses:
+        "200":
+          description: Portfolio projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+    post:
+      operationId: createProject
+      tags: [admin]
+      summary: Create a portfolio project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectInput"
+      responses:
+        "201":
+          description: Created project
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+  /projects/{id}:
+    patch:
+      operationId: updateProject
+      tags: [admin]
+      summary: Update a portfolio project
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectUpdate"
+      responses:
+        "200":
+          description: Updated project
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+    delete:
+      operationId: deleteProject
+      tags: [admin]
+      summary: Delete a project
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "204":
+          description: Deleted
+  /founders:
+    get:
+      operationId: listFounders
+      tags: [public, admin]
+      summary: List founders
+      responses:
+        "200":
+          description: Founders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Founder"
+    post:
+      operationId: createFounder
+      tags: [admin]
+      summary: Create a founder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FounderInput"
+      responses:
+        "201":
+          description: Created founder
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Founder"
+  /founders/{id}:
+    patch:
+      operationId: updateFounder
+      tags: [admin]
+      summary: Update a founder
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FounderUpdate"
+      responses:
+        "200":
+          description: Updated founder
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Founder"
+    delete:
+      operationId: deleteFounder
+      tags: [admin]
+      summary: Delete a founder
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "204":
+          description: Deleted
+  /testimonials:
+    get:
+      operationId: listTestimonials
+      tags: [public, admin]
+      summary: List testimonials
+      responses:
+        "200":
+          description: Testimonials
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Testimonial"
+    post:
+      operationId: createTestimonial
+      tags: [admin]
+      summary: Create a testimonial
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TestimonialInput"
+      responses:
+        "201":
+          description: Created testimonial
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Testimonial"
+  /testimonials/{id}:
+    patch:
+      operationId: updateTestimonial
+      tags: [admin]
+      summary: Update a testimonial
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TestimonialUpdate"
+      responses:
+        "200":
+          description: Updated testimonial
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Testimonial"
+    delete:
+      operationId: deleteTestimonial
+      tags: [admin]
+      summary: Delete a testimonial
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "204":
+          description: Deleted
+  /faqs:
+    get:
+      operationId: listFaqs
+      tags: [public, admin]
+      summary: List FAQs
+      responses:
+        "200":
+          description: FAQs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Faq"
+    post:
+      operationId: createFaq
+      tags: [admin]
+      summary: Create an FAQ
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FaqInput"
+      responses:
+        "201":
+          description: Created FAQ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Faq"
+  /faqs/{id}:
+    patch:
+      operationId: updateFaq
+      tags: [admin]
+      summary: Update an FAQ
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FaqUpdate"
+      responses:
+        "200":
+          description: Updated FAQ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Faq"
+    delete:
+      operationId: deleteFaq
+      tags: [admin]
+      summary: Delete an FAQ
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "204":
+          description: Deleted
+  /bookings:
+    post:
+      operationId: createBooking
+      tags: [public]
+      summary: Submit a service request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingInput"
+      responses:
+        "201":
+          description: Created service request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+    get:
+      operationId: listBookings
+      tags: [admin]
+      summary: List service requests
+      responses:
+        "200":
+          description: Service requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+  /bookings/{id}:
+    patch:
+      operationId: updateBooking
+      tags: [admin]
+      summary: Update a booking status
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingUpdate"
+      responses:
+        "200":
+          description: Updated booking
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+  /messages:
+    post:
+      operationId: createMessage
+      tags: [public]
+      summary: Submit a contact message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageInput"
+      responses:
+        "201":
+          description: Created message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+    get:
+      operationId: listMessages
+      tags: [admin]
+      summary: List contact messages
+      responses:
+        "200":
+          description: Contact messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+  /settings:
+    get:
+      operationId: getSettings
+      tags: [public, admin]
+      summary: Get company settings
+      responses:
+        "200":
+          description: Company settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanySettings"
+    patch:
+      operationId: updateSettings
+      tags: [admin]
+      summary: Update company settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompanySettingsUpdate"
+      responses:
+        "200":
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanySettings"
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [admin]
+      summary: Get owner dashboard summary
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
 components:
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
         status:
           type: string
-      required:
-        - status
-
+    Visible:
+      type: boolean
+      default: true
+    Service:
+      type: object
+      required: [id, title, text, tag, visible]
+      properties:
+        id: { type: integer }
+        icon: { type: string }
+        title: { type: string }
+        text: { type: string }
+        tag: { type: string }
+        visible: { type: boolean }
+    ServiceInput:
+      type: object
+      required: [title, text, tag]
+      properties:
+        icon: { type: string }
+        title: { type: string }
+        text: { type: string }
+        tag: { type: string }
+        visible: { type: boolean }
+    ServiceUpdate:
+      type: object
+      properties:
+        icon: { type: string }
+        title: { type: string }
+        text: { type: string }
+        tag: { type: string }
+        visible: { type: boolean }
+    Project:
+      type: object
+      required: [id, category, title, text, image, features, visible]
+      properties:
+        id: { type: integer }
+        category: { type: string }
+        title: { type: string }
+        text: { type: string }
+        image: { type: string }
+        accent: { type: string }
+        features:
+          type: array
+          items: { type: string }
+        visible: { type: boolean }
+    ProjectInput:
+      type: object
+      required: [category, title, text]
+      properties:
+        category: { type: string }
+        title: { type: string }
+        text: { type: string }
+        image: { type: string }
+        accent: { type: string }
+        features:
+          type: array
+          items: { type: string }
+        visible: { type: boolean }
+    ProjectUpdate:
+      allOf:
+        - $ref: "#/components/schemas/ProjectInput"
+    Founder:
+      type: object
+      required: [id, name, role, bio, initials, color, visible]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        role: { type: string }
+        bio: { type: string }
+        initials: { type: string }
+        color: { type: string }
+        visible: { type: boolean }
+    FounderInput:
+      type: object
+      required: [name, role, bio]
+      properties:
+        name: { type: string }
+        role: { type: string }
+        bio: { type: string }
+        initials: { type: string }
+        color: { type: string }
+        visible: { type: boolean }
+    FounderUpdate:
+      allOf:
+        - $ref: "#/components/schemas/FounderInput"
+    Testimonial:
+      type: object
+      required: [id, quote, name, role, initials, visible]
+      properties:
+        id: { type: integer }
+        quote: { type: string }
+        name: { type: string }
+        role: { type: string }
+        initials: { type: string }
+        visible: { type: boolean }
+    TestimonialInput:
+      type: object
+      required: [quote, name, role]
+      properties:
+        quote: { type: string }
+        name: { type: string }
+        role: { type: string }
+        initials: { type: string }
+        visible: { type: boolean }
+    TestimonialUpdate:
+      allOf:
+        - $ref: "#/components/schemas/TestimonialInput"
+    Faq:
+      type: object
+      required: [id, question, answer, visible]
+      properties:
+        id: { type: integer }
+        question: { type: string }
+        answer: { type: string }
+        visible: { type: boolean }
+    FaqInput:
+      type: object
+      required: [question, answer]
+      properties:
+        question: { type: string }
+        answer: { type: string }
+        visible: { type: boolean }
+    FaqUpdate:
+      allOf:
+        - $ref: "#/components/schemas/FaqInput"
+    Booking:
+      type: object
+      required: [id, reference, name, email, phone, service, status, createdAt]
+      properties:
+        id: { type: integer }
+        reference: { type: string }
+        name: { type: string }
+        business: { type: string }
+        email: { type: string }
+        phone: { type: string }
+        service: { type: string }
+        budget: { type: string }
+        preferredDate: { type: ["string", "null"] }
+        description: { type: string }
+        contactPreference: { type: string }
+        status: { type: string }
+        createdAt: { type: string, format: date-time }
+    BookingInput:
+      type: object
+      required: [name, email, phone, service, description]
+      properties:
+        name: { type: string }
+        business: { type: string }
+        email: { type: string, format: email }
+        phone: { type: string }
+        service: { type: string }
+        budget: { type: string }
+        preferredDate: { type: ["string", "null"] }
+        description: { type: string }
+        contactPreference: { type: string }
+    BookingUpdate:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [New, Contacted, Quoted, In Progress, Completed, Cancelled]
+    Message:
+      type: object
+      required: [id, name, email, topic, message, createdAt]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string }
+        topic: { type: string }
+        message: { type: string }
+        createdAt: { type: string, format: date-time }
+    MessageInput:
+      type: object
+      required: [name, email, topic, message]
+      properties:
+        name: { type: string }
+        email: { type: string, format: email }
+        topic: { type: string }
+        message: { type: string }
+    CompanySettings:
+      type: object
+      required: [company, tagline, email, phone, whatsapp, location, hours]
+      properties:
+        company: { type: string }
+        tagline: { type: string }
+        email: { type: string }
+        phone: { type: string }
+        whatsapp: { type: string }
+        location: { type: string }
+        hours: { type: string }
+    CompanySettingsUpdate:
+      allOf:
+        - $ref: "#/components/schemas/CompanySettings"
+    PublicBootstrap:
+      type: object
+      required: [settings, services, projects, founders, testimonials, faqs]
+      properties:
+        settings:
+          $ref: "#/components/schemas/CompanySettings"
+        services:
+          type: array
+          items: { $ref: "#/components/schemas/Service" }
+        projects:
+          type: array
+          items: { $ref: "#/components/schemas/Project" }
+        founders:
+          type: array
+          items: { $ref: "#/components/schemas/Founder" }
+        testimonials:
+          type: array
+          items: { $ref: "#/components/schemas/Testimonial" }
+        faqs:
+          type: array
+          items: { $ref: "#/components/schemas/Faq" }
+    DashboardSummary:
+      type: object
+      required: [services, projects, founders, bookings, messages, testimonials, faqs, recentBookings]
+      properties:
+        services: { type: integer }
+        projects: { type: integer }
+        founders: { type: integer }
+        bookings: { type: integer }
+        messages: { type: integer }
+        testimonials: { type: integer }
+        faqs: { type: integer }
+        recentBookings:
+          type: array
+          items: { $ref: "#/components/schemas/Booking" }

@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "GreenPay Enterprises"
+description = "A professional portfolio and lead-generation website for GreenPay Enterprises, with a database-backed admin workspace for services, founders, projects, testimonials, FAQs, bookings, messages, and company details."
+version = "1.0.0"
+id = "artifacts/greenpay-enterprises"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23186
+
+[services.development]
+run = "pnpm --filter @workspace/greenpay-enterprises run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/greenpay-enterprises", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/greenpay-enterprises/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23186"
+BASE_PATH = "/"

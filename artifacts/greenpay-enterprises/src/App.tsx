@@ -120,16 +120,14 @@ function Brand({ inverse = false }: { inverse?: boolean }) {
     <Link
       href="/"
       data-testid="link-brand"
-      className={`flex items-center gap-3 ${inverse ? "text-background" : "text-foreground"}`}
+      aria-label="GreenPay home"
+      className={`flex shrink-0 items-center ${inverse ? "rounded-lg bg-background px-1.5 py-1" : ""}`}
     >
-      <span
-        className={`grid size-9 place-items-center rounded-xl ${inverse ? "bg-accent text-primary" : "bg-primary text-accent"}`}
-      >
-        <Zap size={18} strokeWidth={2.5} />
-      </span>
-      <span className="font-bold tracking-tight">
-        greenpay<span className="text-accent">.</span>
-      </span>
+      <img
+        src="/loop-logo-horizontal.png"
+        alt="GreenPay"
+        className="h-8 w-auto max-w-[150px] object-contain"
+      />
     </Link>
   );
 }
@@ -165,9 +163,12 @@ function PublicNav() {
         <a
           href="#contact"
           data-testid="link-nav-start"
-          className={`${buttonBase} bg-primary px-4 py-2 text-xs text-primary-foreground`}
+          aria-label="Start a conversation"
+          className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-3 text-xs font-semibold text-primary-foreground transition hover:-translate-y-0.5 sm:px-4"
         >
-          Start a conversation <ArrowRight size={15} />
+          <span className="sm:hidden">Start</span>
+          <span className="hidden sm:inline">Start a conversation</span>
+          <ArrowRight size={14} />
         </a>
         <button
           type="button"

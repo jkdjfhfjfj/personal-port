@@ -112,6 +112,8 @@ const inputClass =
   "w-full rounded-xl border border-border bg-card px-4 py-3 text-sm outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10";
 const buttonBase =
   "inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50";
+const OWNER_EMAIL = "moxndam69@gmail.com";
+const OWNER_PASSWORD = "12345678";
 
 function Brand({ inverse = false }: { inverse?: boolean }) {
   return (
@@ -163,7 +165,7 @@ function PublicNav() {
         <a
           href="#contact"
           data-testid="link-nav-start"
-          className={`${buttonBase} bg-primary text-primary-foreground py-2.5`}
+          className={`${buttonBase} bg-primary px-4 py-2 text-xs text-primary-foreground`}
         >
           Start a conversation <ArrowRight size={15} />
         </a>
@@ -841,13 +843,6 @@ function Home() {
             {settings.location} · {new Date().getFullYear()} GreenPay
             Enterprises
           </div>
-          <Link
-            href="/sign-in"
-            data-testid="link-owner-sign-in"
-            className="text-xs font-semibold text-accent"
-          >
-            Owner sign in <ArrowRight className="ml-1 inline" size={13} />
-          </Link>
         </div>
       </footer>
     </div>
@@ -1048,18 +1043,21 @@ function AdminGuard({ children }: { children: ReactNode }) {
   return <AdminShell>{children}</AdminShell>;
 }
 
-function SignIn({ signUp = false }: { signUp?: boolean }) {
+function SignIn() {
   const [, setLocation] = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (!email || !password) {
-      setError("Enter your email and password to continue.");
+    if (
+      email.trim().toLowerCase() !== OWNER_EMAIL ||
+      password !== OWNER_PASSWORD
+    ) {
+      setError("That owner email or password is not correct.");
       return;
     }
-    localStorage.setItem("greenpay-owner", email);
+    localStorage.setItem("greenpay-owner", OWNER_EMAIL);
     setLocation("/admin");
   };
   return (
@@ -1093,15 +1091,13 @@ function SignIn({ signUp = false }: { signUp?: boolean }) {
             <Brand />
           </div>
           <p className="gp-mono mb-3 text-[10px] text-muted-foreground">
-            {signUp ? "Create owner access" : "Welcome back"}
+            Welcome back
           </p>
           <h1 className="gp-display text-5xl leading-none">
-            {signUp ? "Make a home for the work." : "Good to see you again."}
+            Good to see you again.
           </h1>
           <p className="mt-5 text-sm leading-6 text-muted-foreground">
-            {signUp
-              ? "Set up your GreenPay owner workspace."
-              : "Sign in to manage your site and stay close to every new conversation."}
+            Sign in to manage your site and stay close to every new conversation.
           </p>
           <form
             className="mt-9 space-y-4"
@@ -1138,19 +1134,9 @@ function SignIn({ signUp = false }: { signUp?: boolean }) {
               className={`${buttonBase} w-full bg-primary text-primary-foreground`}
               data-testid="button-auth-submit"
             >
-              {signUp ? "Create workspace" : "Sign in"} <ArrowRight size={16} />
+              Sign in <ArrowRight size={16} />
             </button>
           </form>
-          <p className="mt-8 text-center text-sm text-muted-foreground">
-            {signUp ? "Already have access? " : "New owner? "}
-            <Link
-              href={signUp ? "/sign-in" : "/sign-up"}
-              data-testid="link-auth-switch"
-              className="font-bold text-primary underline underline-offset-4"
-            >
-              {signUp ? "Sign in" : "Create access"}
-            </Link>
-          </p>
           <p className="mt-12 text-center text-xs text-muted-foreground">
             Owner access is private to your GreenPay workspace.
           </p>
@@ -2059,8 +2045,8 @@ function Router() {
         <Route path="/" component={Home} />
         <Route path="/sign-in" component={() => <SignIn />} />
         <Route path="/sign-in/:rest*" component={() => <SignIn />} />
-        <Route path="/sign-up" component={() => <SignIn signUp />} />
-        <Route path="/sign-up/:rest*" component={() => <SignIn signUp />} />
+        <Route path="/sign-up" component={() => <SignIn />} />
+        <Route path="/sign-up/:rest*" component={() => <SignIn />} />
         <Route component={AdminRouter} />
         <Route component={NotFound} />
       </Switch>

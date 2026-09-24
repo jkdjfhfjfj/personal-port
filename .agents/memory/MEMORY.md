@@ -1,1 +1,2 @@
 - [Preview API behavior](preview-api.md) — seeded in-memory content keeps the imported GreenPay site runnable without database or Clerk setup.
+- [Managed API rebuilds](api-workflow-rebuild.md) — restart the API workflow after source route changes so its generated dist bundle is refreshed.

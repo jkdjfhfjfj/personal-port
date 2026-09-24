@@ -2,6 +2,8 @@
 
 This guide covers the current GreenPay workspace as it is configured now.
 
+For the Render-specific version of this guide, see [`RENDER.md`](./RENDER.md).
+
 ## Run locally
 
 From the project root:
@@ -66,7 +68,7 @@ For a production launch, connect PostgreSQL with `DATABASE_URL`, add the content
 3. Build the website with `pnpm --filter @workspace/greenpay-enterprises run build`.
 4. Keep the API service available under the same host’s `/api` path.
 5. Confirm `/api/healthz` and `/api/bootstrap` return `200`.
-6. Replace the temporary owner password before making the site public.
+6. Replace the client-side demo owner gate with server-enforced authentication before making the owner workspace public.
 
 ## Owner access
 
@@ -74,9 +76,4 @@ The public site no longer displays an admin/sign-in link. The private login page
 
 `/sign-in`
 
-Temporary owner credentials:
-
-- Email: `moxndam69@gmail.com`
-- Password: `12345678`
-
-These are intentionally simple temporary defaults for the current workspace. Change them before production hosting; the current client-side owner gate is not a replacement for production-grade authentication.
+The current owner sign-in is a client-side demo gate. Do not use its hardcoded demo credentials in production, and do not treat it as authentication. Before launch, use Clerk or another server-enforced identity system and remove the demo gate.

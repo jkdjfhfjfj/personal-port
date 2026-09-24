@@ -1,5 +1,7 @@
 # GreenPay site
 
+Deployment instructions for Render are in [`RENDER.md`](./RENDER.md). The short local hosting notes are in [`HOSTING.md`](./HOSTING.md).
+
 ## Run locally outside Replit
 
 Requirements: Node.js 24 and pnpm.

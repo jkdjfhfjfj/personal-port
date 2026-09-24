@@ -15,11 +15,13 @@ import {
   ClipboardList,
   Clock3,
   Code2,
+  CreditCard,
   Eye,
   EyeOff,
   FileText,
   Globe2,
   Inbox,
+  Landmark,
   LayoutDashboard,
   Mail,
   MapPin,
@@ -35,11 +37,13 @@ import {
   Search,
   Send,
   Settings,
+  Smartphone,
   Sparkles,
   Trash2,
   Users,
   X,
   Zap,
+  Bitcoin,
 } from "lucide-react";
 import {
   getGetDashboardSummaryQueryKey,
@@ -153,6 +157,9 @@ function PublicNav() {
           <a href="#services" data-testid="link-nav-services">
             What we do
           </a>
+          <a href="#payments" data-testid="link-nav-payments">
+            Global payments
+          </a>
           <a href="#approach" data-testid="link-nav-approach">
             Our approach
           </a>
@@ -182,7 +189,7 @@ function PublicNav() {
       </div>
       {open && (
         <nav className="border-t border-border bg-background px-5 py-4 md:hidden">
-          {["work", "services", "approach", "contact"].map((id) => (
+          {["work", "services", "payments", "approach", "contact"].map((id) => (
             <a
               key={id}
               href={`#${id}`}
@@ -194,6 +201,8 @@ function PublicNav() {
                 ? "Selected work"
                 : id === "approach"
                   ? "Our approach"
+                  : id === "payments"
+                    ? "Global payments"
                   : id === "contact"
                     ? "Contact"
                     : "What we do"}
@@ -544,13 +553,114 @@ function Home() {
           </div>
         </section>
         <section
+          id="payments"
+          className="border-y border-border bg-secondary/40 px-5 py-24 lg:px-8 lg:py-36"
+        >
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-12 lg:grid-cols-[.78fr_1.22fr]">
+              <div>
+                <SectionLabel>03 / Global delivery</SectionLabel>
+                <h2 className="gp-display max-w-md text-5xl leading-[.94] md:text-6xl">
+                  Built here.
+                  <br />
+                  Ready anywhere.
+                </h2>
+                <p className="mt-7 max-w-sm text-sm leading-7 text-muted-foreground">
+                  We help teams launch and operate digital services across
+                  borders, currencies, and the payment habits their customers
+                  already trust.
+                </p>
+                <div className="mt-8 rounded-2xl border border-primary/15 bg-card p-5">
+                  <div className="flex items-start gap-3">
+                    <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary text-accent">
+                      <Globe2 size={18} />
+                    </span>
+                    <div>
+                      <p className="font-bold">Global service coverage</p>
+                      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                        Nairobi-based, remote-first, and ready to work with
+                        clients across East Africa, Africa, and international
+                        markets.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {[
+                  {
+                    title: "Card payments",
+                    icon: CreditCard,
+                    text: "Visa, Mastercard, and other supported debit or credit cards through a PCI-compliant gateway.",
+                    note: "Hosted checkout or tokenized payments",
+                  },
+                  {
+                    title: "Mobile money",
+                    icon: Smartphone,
+                    text: "M-Pesa, Airtel Money, and country-specific wallets connected through approved regional providers.",
+                    note: "Local rails, prompts, and confirmations",
+                  },
+                  {
+                    title: "Bank transfers",
+                    icon: Landmark,
+                    text: "Local and international account-to-account payments with references, receipts, and reconciliation workflows.",
+                    note: "Built for larger invoices and retainers",
+                  },
+                  {
+                    title: "Crypto payments",
+                    icon: Bitcoin,
+                    text: "Compliant crypto and stablecoin payment flows where the customer, country, and provider support them.",
+                    note: "Clear settlement and refund rules",
+                  },
+                ].map(({ title, icon: Icon, text, note }) => (
+                  <article
+                    key={title}
+                    className="rounded-2xl border border-border bg-card p-6 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg"
+                    data-testid={`card-payment-${title.toLowerCase().replaceAll(" ", "-")}`}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <span className="grid size-10 place-items-center rounded-xl bg-secondary text-primary">
+                        <Icon size={18} />
+                      </span>
+                      <span className="rounded-full bg-accent/60 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-primary">
+                        Integration
+                      </span>
+                    </div>
+                    <h3 className="mt-10 text-xl font-bold">{title}</h3>
+                    <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                      {text}
+                    </p>
+                    <p className="mt-5 border-t border-border pt-4 text-xs font-semibold text-primary/70">
+                      {note}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </div>
+            <div className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-primary px-6 py-5 text-primary-foreground">
+              <p className="max-w-2xl text-sm leading-6 text-primary-foreground/70">
+                Payment rails are planned around your market, currency, risk
+                controls, and settlement needs. We never ask your customers to
+                share raw card details, wallet seed phrases, or private keys.
+              </p>
+              <a
+                href="#contact"
+                data-testid="link-payments-contact"
+                className={`${buttonBase} shrink-0 bg-accent text-primary`}
+              >
+                Plan your payment flow <ArrowRight size={15} />
+              </a>
+            </div>
+          </div>
+        </section>
+        <section
           id="work"
           className="bg-secondary/50 px-5 py-24 lg:px-8 lg:py-36"
         >
           <div className="mx-auto max-w-7xl">
             <div className="flex flex-wrap items-end justify-between gap-6">
               <div>
-                <SectionLabel>03 / Selected work</SectionLabel>
+                <SectionLabel>04 / Selected work</SectionLabel>
                 <h2 className="gp-display text-5xl leading-none md:text-6xl">
                   Built for real
                   <br />
@@ -618,7 +728,7 @@ function Home() {
         <section id="approach" className="px-5 py-24 lg:px-8 lg:py-36">
           <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-[.9fr_1.1fr]">
             <div>
-              <SectionLabel>04 / How we work</SectionLabel>
+              <SectionLabel>05 / How we work</SectionLabel>
               <h2 className="gp-display text-5xl leading-[.92] md:text-6xl">
                 Small team.
                 <br />
@@ -677,7 +787,7 @@ function Home() {
         {testimonials.length > 0 && (
           <section className="bg-primary px-5 py-24 text-primary-foreground lg:px-8">
             <div className="mx-auto max-w-7xl">
-              <SectionLabel>05 / Kind words</SectionLabel>
+              <SectionLabel>06 / Kind words</SectionLabel>
               <div className="grid gap-7 lg:grid-cols-[1.15fr_.85fr]">
                 {testimonials.slice(0, 2).map((item) => (
                   <figure
@@ -709,7 +819,7 @@ function Home() {
         {founders.length > 0 && (
           <section className="px-5 py-24 lg:px-8">
             <div className="mx-auto max-w-7xl">
-              <SectionLabel>06 / The people</SectionLabel>
+              <SectionLabel>07 / The people</SectionLabel>
               <div className="grid gap-10 lg:grid-cols-[.8fr_1.2fr]">
                 <div>
                   <h2 className="gp-display text-5xl leading-none">
@@ -769,7 +879,7 @@ function Home() {
         {faqs.length > 0 && (
           <section className="px-5 py-24 lg:px-8">
             <div className="mx-auto max-w-3xl">
-              <SectionLabel>07 / Frequently asked</SectionLabel>
+              <SectionLabel>08 / Frequently asked</SectionLabel>
               <h2 className="gp-display text-5xl">Good questions welcome.</h2>
               <div className="mt-10 divide-y divide-border border-y border-border">
                 {faqs.map((faq) => (
@@ -800,7 +910,7 @@ function Home() {
         >
           <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[.7fr_1.3fr]">
             <div>
-              <SectionLabel>08 / Start here</SectionLabel>
+              <SectionLabel>09 / Start here</SectionLabel>
               <h2 className="gp-display text-6xl leading-[.88]">
                 Bring the
                 <br />

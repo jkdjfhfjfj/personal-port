@@ -1,15 +1,16 @@
-# [Project name]
+# GreenPay Enterprises
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+GreenPay is a global digital technology partner website with a public services portfolio, enquiry flow, and owner workspace.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/api-server run dev` — run the API server
+- `pnpm --filter @workspace/greenpay-enterprises run dev` — run the website
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only, when persistence is wired)
+- Deployment: see `RENDER.md`
 
 ## Stack
 
@@ -22,23 +23,36 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/greenpay-enterprises/src/App.tsx` — public site and owner workspace UI
+- `artifacts/api-server/src/routes/content.ts` — current content and enquiry API
+- `lib/api-spec/openapi.yaml` — API contract source of truth
+- `lib/db/src/schema/` — database schema source of truth
+- `HOSTING.md` and `RENDER.md` — local and Render deployment instructions
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The frontend is a static Vite build and the API is a separate Express service.
+- Production hosting should route `/api/*` to the API service and all other paths to the frontend SPA.
+- Payment method content is informational until a provider integration and server-side payment lifecycle are implemented.
+- Current content uses seeded in-memory API data; it is not durable storage.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Public portfolio and services site for global clients
+- Service enquiry submission and owner pipeline
+- Owner editing for services, projects, founders, testimonials, FAQs, and company details
+- Payment rail guidance for cards, mobile money, bank transfers, and compliant crypto flows
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- User requested clear Render hosting guidance, including working directory, commands, environment variables, and payment/service coverage.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Use the repository root as the working directory on Render; the workspace lockfile is not inside an individual artifact.
+- Do not add `API_PROXY_TARGET` to the production frontend; it is only for local development.
+- Do not publish the owner demo gate or use it as production authentication.
+- Do not collect raw card data or crypto secrets in this app.
 
 ## Pointers
 

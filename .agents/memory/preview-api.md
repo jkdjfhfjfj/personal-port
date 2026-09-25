@@ -3,8 +3,8 @@ name: Preview API behavior
 description: Why the GreenPay preview API is currently configured for local development
 ---
 
-The GreenPay preview API uses seeded in-memory content so the imported site can run without a database or Clerk credentials.
+The GreenPay API uses PostgreSQL when DATABASE_URL is available and keeps a seeded in-memory fallback for local runs without a database or Clerk credentials.
 
-**Why:** The imported project included a complete API contract and frontend but only a health route; adding persistence or authentication was outside the cleanup request.
+**Why:** The same API must support both durable Render deployments and lightweight local previews; the fallback keeps the preview runnable while production requires DATABASE_URL.
 
-**How to apply:** Keep this preview behavior lightweight unless a future request explicitly asks for durable content, owner authentication, or production data storage.
+**How to apply:** Configure DATABASE_URL before production startup. Render runs the Drizzle schema push during its build, while local no-database runs use memory and should not be treated as durable.

@@ -34,7 +34,7 @@ If you prefer **New → Web Service**, use these exact values:
 | Root Directory | `.` |
 | Runtime | `Node` |
 | Plan | `Free` |
-| Build Command | `corepack enable && pnpm install --frozen-lockfile && PORT=4173 BASE_PATH=/ pnpm --filter @workspace/greenpay-enterprises run build && pnpm --filter @workspace/api-server run build` |
+| Build Command | `corepack enable && pnpm install --frozen-lockfile && pnpm --filter @workspace/db run push && PORT=4173 BASE_PATH=/ pnpm --filter @workspace/greenpay-enterprises run build && pnpm --filter @workspace/api-server run build` |
 | Start Command | `pnpm --filter @workspace/api-server run start` |
 | Health Check Path | `/api/healthz` |
 | Publish Directory | Not applicable — this is a Web Service, not a Static Site |
@@ -56,6 +56,7 @@ Set these under the Render service's **Environment** tab:
 | `NODE_VERSION` | `24` | Recommended |
 | `NODE_ENV` | `production` | Recommended |
 | `BASE_PATH` | `/` | Yes |
+| `DATABASE_URL` | PostgreSQL connection string | **Yes** |
 | `LOG_LEVEL` | `info` | Optional |
 
 Do not add these to the production frontend:
@@ -64,11 +65,10 @@ Do not add these to the production frontend:
 - a separate API URL — the website uses relative `/api/*` requests
 - `PORT` — Render injects it at runtime
 
-Future production variables can be added when those features are implemented:
+Other production variables can be added when those features are implemented:
 
 | Variable | Purpose |
 | --- | --- |
-| `DATABASE_URL` | PostgreSQL persistence |
 | `SESSION_SECRET` | Server-side session signing |
 | `CLERK_SECRET_KEY` | Server authentication |
 | `CLERK_PUBLISHABLE_KEY` | Public Clerk configuration |
@@ -99,12 +99,36 @@ the SPA fallback:
 No Render rewrite rules are needed. Do not create a separate Static Site for
 this configuration.
 
+## PostgreSQL migration
+
+The API uses the Drizzle schema in `lib/db/src/schema/greenpay.ts`. Render must
+have `DATABASE_URL` available during the build, not only at runtime. The Render
+build command runs:
+
+```text
+pnpm --filter @workspace/db run push
+```
+
+That creates or updates the GreenPay tables before the frontend and API build.
+When the API starts, it seeds the initial GreenPay content only when each table
+is empty. Bookings, messages, settings, and admin content then use PostgreSQL.
+
+In the Render dashboard:
+
+1. Create or attach a PostgreSQL database.
+2. Add its connection string to the web service environment as `DATABASE_URL`.
+3. Save the variable and redeploy.
+4. Check the build logs for the Drizzle push before the frontend and API builds.
+
+Do not put the connection string in `render.yaml`, Git, or frontend variables.
+
 ## Keep the free service warm
 
-Render free Web Services can spin down after inactivity. A timer inside the
-application cannot reliably prevent this because the process is no longer
-running after it sleeps. A browser timer also only works while somebody has
-the site open.
+Render free Web Services can spin down after inactivity. The API now sends a
+best-effort request to its own `/api/healthz` endpoint every 10 minutes while
+the process is running. This confirms the process is alive, but it cannot wake
+the process after Render has already suspended it and may not count as external
+traffic for Render's idle policy.
 
 To send a request every 10 minutes without shell access, use a browser-based
 HTTP monitor such as cron-job.org:
@@ -127,9 +151,9 @@ The health endpoint returns:
 {"status":"ok"}
 ```
 
-This is an external keep-alive request, not an application feature. Render can
-still apply its own limits or suspend a free service, and a sleeping service
-will still have a cold-start delay on the first request.
+The internal timer is an application feature, but the external monitor is still
+recommended because it can reach the service after a cold start. Render can
+still apply its own limits or suspend a free service.
 
 ## First launch checks
 
@@ -146,12 +170,11 @@ After the service deploys:
 
 ## Current production limitations
 
-- Content, bookings, and messages are stored in API memory. A restart or
-  redeploy resets them.
+- If `DATABASE_URL` is not configured, the API uses temporary in-memory preview
+  data. Once `DATABASE_URL` is configured and the database-backed API is
+  deployed, content, bookings, and messages survive restarts.
 - Owner sign-in is currently a client-side demo gate, not production
   authentication.
-- `DATABASE_URL` alone does not enable persistence; database tables,
-  migrations, and server-side storage still need to be implemented.
 - The public payment cards explain how clients can pay GreenPay. They do not
   publish account numbers, mobile-money numbers, card details, or crypto
   wallet addresses.

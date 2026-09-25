@@ -50,16 +50,21 @@ Set these through Replit Secrets or the hosting provider’s environment setting
 | --- | --- |
 | `PORT` | Injected service port. Let the workflow provide it. |
 | `BASE_PATH` | Website URL prefix. `/` for this project. |
-| `DATABASE_URL` | PostgreSQL connection string when persistent storage is wired in. |
+| `DATABASE_URL` | Required PostgreSQL connection string for production persistence. |
 | `SESSION_SECRET` | Server session signing secret if server sessions are added. |
 | `CLERK_SECRET_KEY` | Enables the optional Clerk middleware. |
 | `CLERK_PUBLISHABLE_KEY` | Public Clerk key used with the optional Clerk middleware. |
 
 ## Database status
 
-The current preview does **not** require a database. Website content, bookings, and messages are seeded and kept in API memory, so changes made in the owner workspace reset when the API restarts.
+The API uses the Drizzle schema under `lib/db/src/schema` whenever
+`DATABASE_URL` is available. The Render build runs
+`pnpm --filter @workspace/db run push` before building the application, and the
+API seeds empty tables with the initial GreenPay content. Local development can
+still run without a database using the seeded in-memory fallback.
 
-For a production launch, connect PostgreSQL with `DATABASE_URL`, add the content tables and migrations under `lib/db`, then replace the in-memory route store in `artifacts/api-server/src/routes/content.ts`. Do not assume that setting `DATABASE_URL` alone enables persistence.
+For Render, add `DATABASE_URL` to the service environment before the first
+deployment. Do not commit the connection string or put it in frontend variables.
 
 ## Publish/host checklist
 
